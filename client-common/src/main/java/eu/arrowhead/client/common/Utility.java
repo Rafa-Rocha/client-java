@@ -54,6 +54,10 @@ import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.UriBuilder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.glassfish.jersey.apache.connector.ApacheClientProperties;
+import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+
 
 //Contains static utility methods for the project, most important one is the sendRequest method!
 public final class Utility {
@@ -72,7 +76,8 @@ public final class Utility {
   private static final String APP_CONF = "app.conf";
   private static final String APP_CONF_DIR = "config" + File.separator + "app.conf";
 
-
+  private static final int CONNECTION_POOL_SIZE = Utility.getProp().getIntProperty("connection_pool_size", 0);
+  
   private Utility() throws AssertionError {
     throw new AssertionError("Arrowhead Common:Utility is a non-instantiable class");
   }
@@ -81,6 +86,14 @@ public final class Utility {
     ClientConfig configuration = new ClientConfig();
     configuration.property(ClientProperties.CONNECT_TIMEOUT, 30000);
     configuration.property(ClientProperties.READ_TIMEOUT, 30000);
+    
+    if (CONNECTION_POOL_SIZE > 0) {
+    	// Connection Pooling
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setDefaultMaxPerRoute(CONNECTION_POOL_SIZE);
+        configuration.property(ApacheClientProperties.CONNECTION_MANAGER, connectionManager);
+        configuration.connectorProvider(new ApacheConnectorProvider());
+    }
 
     Client client;
     if (context != null) {

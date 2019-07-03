@@ -17,7 +17,11 @@ import eu.arrowhead.client.common.misc.TypeSafeProperties;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -75,7 +79,15 @@ public abstract class ArrowheadClientMain {
       }
     }
 
-    String address = props.getProperty("address", "0.0.0.0");
+    String address = "";
+    
+    try(final DatagramSocket socket = new DatagramSocket()){
+    	socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+    	address = socket.getLocalAddress().getHostAddress();
+    } catch (SocketException | UnknownHostException e) {
+    	throw new ServiceConfigurationError("Server address error", e);
+    }
+    
     int port = isSecure ? props.getIntProperty("secure_port", clientType.getSecurePort())
                         : props.getIntProperty("insecure_port", clientType.getInsecurePort());
     baseUri = Utility.getUri(address, port, null, isSecure, true);

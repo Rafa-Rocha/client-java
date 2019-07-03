@@ -38,6 +38,23 @@
       <groupId>eu.arrowhead</groupId>
       <artifactId>client-common</artifactId>
     </dependency>
+    
+    <dependency>
+	    <groupId>org.apache.httpcomponents</groupId>
+	    <artifactId>httpclient</artifactId>
+	    <version>4.5.2</version>
+	</dependency>
+    
+    <dependency>
+	    <groupId>org.glassfish.jersey.connectors</groupId>
+	    <artifactId>jersey-apache-connector</artifactId>
+	    <!--<version>2.28</version>-->
+	</dependency>
+	
+    <dependency>
+    	<groupId>org.glassfish.jersey.media</groupId>
+    	<artifactId>jersey-media-sse</artifactId>
+    </dependency>
 
   </dependencies>
 
